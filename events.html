@@ -1,0 +1,170 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - Havyaka Homely Food</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(
+                45deg,
+                rgba(34, 139, 34, 0.9) 0%,
+                rgba(50, 205, 50, 0.9) 50%,
+                rgba(34, 139, 34, 0.9) 100%
+            );
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                60deg,
+                rgba(255, 255, 255, 0.1) 0px,
+                rgba(255, 255, 255, 0.1) 2px,
+                transparent 2px,
+                transparent 20px
+            );
+            z-index: 0;
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                120deg,
+                rgba(255, 255, 255, 0.05) 0px,
+                rgba(255, 255, 255, 0.05) 1px,
+                transparent 1px,
+                transparent 30px
+            );
+            z-index: 0;
+            pointer-events: none;
+        }
+        .content-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.85);
+            width: 90%;
+            max-width: 600px;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem auto;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 2;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        nav a {
+            margin: 0 1rem;
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        nav a:hover {
+            color: #f97316;
+        }
+    </style>
+</head>
+<body>
+    <nav class="flex justify-center">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="events.html">Events</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+    <div class="content-container">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Events We Cater</h2>
+        <div class="space-y-4">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-700">Weddings</h3>
+                <p class="text-sm text-gray-600">
+                    Grand feasts with traditional South Indian dishes to make your special day memorable.
+                </p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-700">Corporate Events</h3>
+                <p class="text-sm text-gray-600">
+                    Professional catering for meetings, seminars, and team gatherings with a homely touch.
+                </p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-700">Family Gatherings</h3>
+                <p class="text-sm text-gray-600">
+                    From birthdays to anniversaries, we bring the flavors of home to your celebrations.
+                </p>
+            </div>
+        </div>
+
+        <!-- New Instagram Posts Section -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Our Instagram Moments</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Check out our latest updates and event highlights on Instagram!
+            </p>
+            <!-- Placeholder for Instagram Feed Embed Code -->
+            <div id="elfsight-instagram-feed" class="elfsight-app-placeholder"></div>
+            <!-- Replace the script below with the actual embed script from Elfsight or your chosen service -->
+            <script src="https://static.elfsight.com/platform/platform.js" data-id="elfsight-instagram-feed" defer></script>
+        </div>
+    </div>
+    <footer class="p-4 text-center text-xs text-gray-600">
+        <p>© 2025 Havyaka Homely Food. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
